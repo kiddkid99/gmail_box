@@ -214,6 +214,10 @@
                 $(".gmail_login").hide();
                 listLabels();
             } else {
+                //Clear thread list
+                $("#mail_box_list").empty();
+                $("#inbox_body").empty();
+                
                 $(".logined_menu").hide();
                 $(".gmail_login").show();
             }
