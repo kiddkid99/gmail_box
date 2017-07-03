@@ -298,6 +298,12 @@
             //Split from string
             from = from.split("<")[0];
 
+            //Display message count
+            var messageCount = thread.messages.length;
+            if (messageCount > 1) {
+                from += "(" + messageCount + ")";
+            }
+
             var internalDate = message.internalDate;
             var time = new Date(new Number(internalDate));
             var timeFormat = getTimeFormat(time);
