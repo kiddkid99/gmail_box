@@ -321,70 +321,73 @@
 
         function displayThreadContent(thread) {
 
+            var $inbox_body = $("#inbox_body");
+            $inbox_body.empty();
+
             //display message in thread
             var messages = thread.messages;
-            console.dir(messages);
 
-
-
-            //Get first message, extract data.
-            var message = thread.messages[0];
+            //Get first message, extract title.
+            var message = messages[0];
             var payload = message.payload;
             var headers = payload.headers;
 
-            var bodyPart = getHtmlBodyPart(message)[0];
-
-            //Replace all '-' and '_' to base64 alphabet '+' and '/'
-            //var data = bodyPart.body.data.replace(/-/g, "+").replace(/_/g, "/");
-
-            var data = bodyPart.body.data;
-
-            //using js base64 decode data
-            var body = Base64.decode(data);
-
-
             //Find header with specific name.
             var subject = findHeader(headers, "Subject").value;
-            var from = findHeader(headers, "From").value;
-            var to = findHeader(headers, "To").value;
 
-            //Replace specail character
-            from = from.replace("<", "&lt;").replace(">", "&gt;");
-
-            var internalDate = message.internalDate;
-            var time = new Date(new Number(internalDate));
-            var timeFormat = getTimeFormat(time);
-
-
-            var $inbox_body = $("#inbox_body");
-
-            var body_template = `<div class="mail_heading row">
-                                                    <div class="col-md-8">
-                                                    </div>
-                                                    <div class="col-md-4 text-right">
-                                                        <p class="date"> ${timeFormat}</p>
-                                                    </div>
+            var title_template = `<div class="mail_heading row">
                                                     <div class="col-md-12">
                                                         <h4> ${subject}</h4>
                                                     </div>
-                                                </div>
+                                                </div>`;
 
-                                                <div class="sender-info">
+            $inbox_body.append(title_template);
+
+            //Display messges
+            for (var i = 0, max = messages.length; i < max; i++) {
+
+                var message = messages[i];
+                var payload = message.payload;
+                var headers = payload.headers;
+                var bodyPart = getHtmlBodyPart(message)[0];
+
+                //Replace all '-' and '_' to base64 alphabet '+' and '/'
+                //var data = bodyPart.body.data.replace(/-/g, "+").replace(/_/g, "/");
+
+                var data = bodyPart.body.data;
+
+                //using js base64 decode data
+                var body = Base64.decode(data);
+
+                var from = findHeader(headers, "From").value;
+                var to = findHeader(headers, "To").value;
+
+                //Replace specail character
+                from = from.replace("<", "&lt;").replace(">", "&gt;");
+
+                var internalDate = message.internalDate;
+                var time = new Date(new Number(internalDate));
+                var timeFormat = getTimeFormat(time);
+
+                var message_template = `<div class="sender-info">
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <strong id="">${from}</strong> to
                                                             <strong>${to}</strong>
                                                             <a class="sender-dropdown"><i class="fa fa-chevron-down"></i></a>
+                                                            <span class="date">${timeFormat}</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="view-mail">
                                                     ${body}
-                                                </div>`;
+                                                </div><hr/>`;
 
 
-            $inbox_body.empty().append(body_template);
+                $inbox_body.append(message_template);
+            }
+
         }
 
         function listThreadByLabelId(id, name) {
