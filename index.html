@@ -384,7 +384,7 @@
         function listThreadByLabelId(id, name) {
             setLabelHeader(name);
             clearMailBoxList();
-
+            
             if (id) {
                 //list threads
                 gapi.client.gmail.users.threads.list({
@@ -398,12 +398,30 @@
 
                     console.table(threads);
 
+                    var batch = gapi.client.newBatch();
                     if (threads && threads.length > 0) {
                         for (i = 0, max = threads.length; i < max; i++) {
                             var thread = threads[i];
-                            var id = thread.id;
-                            var detailThread = getThread(id, appendThreadList);
+                            var threadId = thread.id;
+
+                            //Add request to batch, set the batch with thread id.
+                            batch.add(gapi.client.gmail.users.threads.get({
+                                'userId': 'me',
+                                'id': threadId
+                            }), { id: threadId });
                         }
+
+                        //Handle Batch response
+                        batch.then(function (response) {
+                            var results = response.result;
+
+                            for (var threadId in results) {
+                                var thread = results[threadId].result;
+                                appendThreadList(thread);
+                            }
+
+                        });
+
                     }
                     else {
                         //No threads in this label.
