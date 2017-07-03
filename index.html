@@ -244,6 +244,8 @@
             }).then(function (response) {
                 var labels = response.result.labels;
 
+                $("#gmail_labels").empty();
+
                 if (labels && labels.length > 0) {
                     for (i = 0, max = labels.length; i < max; i++) {
                         var label = labels[i];
